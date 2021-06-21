@@ -19,25 +19,34 @@ class _ListPageState extends State<ListPage> {
   void initState() {
     super.initState();
     controller = ListController();
-    controller.get().then((value) => controller.loading.value = false);
+
+    controller.loading.addListener(() {
+      print(controller.loading.value);
+    });
+
+    controller.list.addListener(() {
+      if(controller.list.value != null || controller.list.value.length > 0){
+        controller.loading.value = false;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
 
-    if(controller.loading.value){
-      return Center(
-        child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black),),
-      );
-    }
-    if(controller.list.value.length == 0){
-      return Center(
-        child: Text("Nenhuma palavra encontra, \nadicione pelo ícone de +", textAlign: TextAlign.center,),
-      );
-    }
     return ValueListenableBuilder(
       valueListenable: controller.list,
       builder: (_, __, ___){
+        if(controller.loading.value == true){
+          return Center(
+            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black),),
+          );
+        }
+        if(controller.list.value.length == 0){
+          return Center(
+            child: Text("Nenhuma palavra encontra, \nadicione pelo ícone de +", textAlign: TextAlign.center,),
+          );
+        }
         return ListView.builder(
             padding: EdgeInsets.all(16),
             itemCount: controller.list.value.length,

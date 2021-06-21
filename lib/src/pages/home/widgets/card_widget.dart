@@ -20,6 +20,7 @@ class _CardWordsState extends State<CardWords> {
 
     final cfg = Config();
     StoreController _storeController = StoreController();
+    ValueNotifier<int> favoriteChange = ValueNotifier(widget.word!.favorite);
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -63,24 +64,27 @@ class _CardWordsState extends State<CardWords> {
             flex: 0,
             child: Column(
               children: [
-                IconButton(
-                  onPressed: () async {
-                    print(widget.word?.id);
-                    if(widget.word?.favorite == 1) {
-                          _storeController.update(widget.word?.id as int, 0).then((data) async {
-                            setState(() {
-                              widget.word?.favorite = 1;
-                            });
-                          });
+                ValueListenableBuilder(
+                    valueListenable: favoriteChange,
+                  builder: (_, __, ___) {
+                    return IconButton(
+                      onPressed: () async {
+                        print(widget.word?.id);
+                        if(favoriteChange.value == 1) {
+                              _storeController.update(widget.word?.id as int, 0).then((data) async {
+                                  favoriteChange.value = 0;
+                              });
 
-                    } else {
-                      _storeController.update(widget.word?.id as int, 1).then((data) async {
-                        setState(() {
-                          widget.word?.favorite = 2;
-                        });
-                      });
-                    }
-                }, icon: Icon(widget.word?.favorite == 1 ? Icons.favorite : Icons.favorite_border, color: Colors.red),),
+                        } else {
+                          _storeController.update(widget.word?.id as int, 1).then((data) async {
+                              favoriteChange.value = 1;
+                          });
+                        }
+                    },
+                      icon: Icon(
+                        favoriteChange.value == 1 ? Icons.favorite : Icons.favorite_border, color: Colors.red),);
+                  }
+                ),
                 IconButton(onPressed: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailsPage(words: widget.word)));
                 }, icon: Icon(Icons.subdirectory_arrow_right, color: cfg.infoText),)
