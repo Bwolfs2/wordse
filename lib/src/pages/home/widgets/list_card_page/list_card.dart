@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:wordse_app/src/pages/home/widgets/list_card_page/list_controller.dart';
 
 import '../card_widget.dart';
@@ -25,6 +26,9 @@ class _ListPageState extends State<ListPage> {
     });
 
     controller.list.addListener(() {
+      setState(() {
+
+      });
       if(controller.list.value != null || controller.list.value.length > 0){
         controller.loading.value = false;
       }
@@ -44,7 +48,8 @@ class _ListPageState extends State<ListPage> {
         }
         if(controller.list.value.length == 0){
           return Center(
-            child: Text("Nenhuma palavra encontra, \nadicione pelo ícone de +", textAlign: TextAlign.center,),
+            child: Text("Nenhuma palavra encontra, \nadicione pelo ícone de +",
+              textAlign: TextAlign.center, style: GoogleFonts.montserrat(fontSize: 16),),
           );
         }
         return ListView.builder(
@@ -53,6 +58,10 @@ class _ListPageState extends State<ListPage> {
             itemBuilder: (context, index) {
               return CardWords(
                   word: controller.list.value[index],
+                  path: "list",
+                  onTap: (value) async {
+                    // await controller.get();
+                  },
               );
             }
         );

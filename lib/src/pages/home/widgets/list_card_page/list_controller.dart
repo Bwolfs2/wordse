@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:wordse_app/store/store_controller.dart';
+import 'package:wordse_app/src/store/store_controller.dart';
 
 class ListController {
 
@@ -15,10 +15,17 @@ class ListController {
     list.value = [];
     loading.value = true;
     storeController.get().then((value) {
-      print(value);
       loading.value = false;
       list.value = value;
     });
+  }
+
+  Future update(int id, int fav) async {
+    int x = await storeController.update(id, fav);
+
+    if(x == 1){
+      await get();
+    }
   }
 
 }

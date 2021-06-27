@@ -6,6 +6,7 @@ final String idColumn = "id";
 final String wordPortugueseColumn = "wordPortuguese";
 final String wordEnglishColumn = "wordEnglish";
 final String favoriteColumn = "favorite";
+final String speakColumn = "speak";
 final String definitionColumn = "definition";
 final String partOfSpeechColumn = "partOfSpeech";
 final dynamic jsonResponseColumn = "jsonResponse";
@@ -38,6 +39,7 @@ class WordsStore {
             "$wordPortugueseColumn TEXT, "
             "$wordEnglishColumn TEXT, "
             "$favoriteColumn BOOLEAN, "
+            "$speakColumn TEXT,"
             "$definitionColumn TEXT,"
             "$partOfSpeechColumn TEXT,"
             "$jsonResponseColumn TEXT)"
@@ -51,6 +53,7 @@ class WordsStore {
       wordPortugueseColumn: words.wordPortuguese,
       wordEnglishColumn: words.wordEnglish,
       favoriteColumn: words.favorite,
+      speakColumn: words.speak,
       definitionColumn: words.definition,
       partOfSpeechColumn: words.partOfSpeech,
       jsonResponseColumn: words.jsonResponse
@@ -70,6 +73,7 @@ class WordsStore {
           wordPortugueseColumn,
           wordEnglishColumn,
           favoriteColumn,
+          speakColumn,
           definitionColumn,
           partOfSpeechColumn,
           jsonResponseColumn
@@ -94,7 +98,7 @@ class WordsStore {
 
   Future<List> getFavoritesWords() async {
     Database dbContext = await db;
-    List listMap = await dbContext.rawQuery("SELECT * FROM $wordsTable w WHERE w.favoriteColumn = 1");
+    List listMap = await dbContext.rawQuery("SELECT * FROM $wordsTable WHERE $favoriteColumn = 1");
     List<Words> wordsList = <Words>[];
 
     for(Map m in listMap){
@@ -131,6 +135,7 @@ class Words {
   int? id;
   String? wordPortuguese;
   String? wordEnglish;
+  String? speak;
   int favorite = 0;
   String? definition;
   String? partOfSpeech;
@@ -143,6 +148,7 @@ class Words {
     wordPortuguese = map[wordPortugueseColumn];
     wordEnglish = map[wordEnglishColumn];
     favorite = map[favoriteColumn];
+    speak = map[speakColumn];
     definition = map[definitionColumn];
     partOfSpeech = map[partOfSpeechColumn];
     jsonResponse = map[jsonResponseColumn];
@@ -153,6 +159,7 @@ class Words {
       wordPortugueseColumn: wordPortuguese,
       wordEnglishColumn: wordEnglish,
       favoriteColumn: favorite,
+      speakColumn: speak,
       definitionColumn: definition,
       partOfSpeechColumn: partOfSpeech,
       jsonResponseColumn: jsonResponse
@@ -170,6 +177,7 @@ class Words {
     return "Words(id: $id, wordPortuguese: $wordPortuguese, "
         "wordEnglish: $wordEnglish, "
         "favorite: $favorite, "
+        "speak: $speak, "
         "definition: $definition, "
         "partOfSpeech: $partOfSpeech, "
         "json: $jsonResponse";

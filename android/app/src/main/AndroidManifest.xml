@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sgdigital.wordse_app">
    <application
-        android:label="wordse_app"
+        android:label="Wordse"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

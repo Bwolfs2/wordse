@@ -5,7 +5,7 @@ import 'package:wordse_app/src/pages/add_page/add_page.dart';
 import 'package:wordse_app/src/pages/favorites/favorites.dart';
 import 'package:wordse_app/src/pages/settings/settings.dart';
 import 'package:wordse_app/src/pages/tips/tips.dart';
-import 'package:wordse_app/store/words_store.dart';
+import 'package:wordse_app/src/store/words_store.dart';
 
 import 'home_controller.dart';
 import 'widgets/list_card_page/list_card.dart';
@@ -40,14 +40,15 @@ class _HomePageState extends State<HomePage> {
         headerSliverBuilder: (_, __){
            return <Widget>[
               SliverAppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: cfg.background,
                 floating: true,
                 actions: [
                   IconButton(onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AddPage()));
                   }, icon: Icon(Icons.add, color: cfg.title))
                 ],
-                title: Text("Hi! Nice to see you!",
+                title: Text("Let's practice!",
                 style: GoogleFonts.montserrat(
                 color: cfg.title,
                 fontWeight: FontWeight.w400,
@@ -61,6 +62,7 @@ class _HomePageState extends State<HomePage> {
             },
             controller: pageController,
             scrollDirection: Axis.horizontal,
+            physics:new NeverScrollableScrollPhysics(),
             children: pages
         ),
       ),
@@ -68,10 +70,11 @@ class _HomePageState extends State<HomePage> {
         valueListenable: controller.valueIndex,
         builder: (_, __, ___){
           return BottomNavigationBar(
-            backgroundColor: cfg.background,
+            backgroundColor: cfg.infoText,
             currentIndex: controller.index,
-            selectedItemColor: cfg.title,
-            unselectedItemColor: Colors.grey,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white.withOpacity(.5),
+            type: BottomNavigationBarType.fixed,
             onTap: (i){
               controller.index = i;
               pageController.animateToPage(
@@ -80,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                   curve: Curves.decelerate);
             },
             items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: "home"),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Início"),
               BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Dicas"),
               BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favoritos"),
               BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Configurações"),

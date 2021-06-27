@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wordse_app/src/config/configs.dart';
 import 'package:wordse_app/src/pages/add_page/add_controller.dart';
-import 'package:wordse_app/store/words_store.dart';
+import 'package:wordse_app/src/pages/home/home.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({Key? key}) : super(key: key);
@@ -14,19 +14,24 @@ class AddPage extends StatefulWidget {
 class _AddPageState extends State<AddPage> {
 
   final controller = AddController();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
 
     final cfg = Config();
-    final _formKey = new GlobalKey<FormState>();
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
+
       appBar: AppBar(
+        backgroundColor: cfg.infoText,
         automaticallyImplyLeading: false,
-        leading: IconButton(icon: Icon(Icons.arrow_back, color: cfg.title), onPressed: () {Navigator.of(context).pop();},),
-        backgroundColor: cfg.background,
-        title: Text("Adicionar", style: GoogleFonts.montserrat(color: cfg.title),),
+        leading: IconButton(icon: Icon(Icons.arrow_back, color: Colors.white), onPressed: () {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
+          },),
+        centerTitle: true,
+        title: Text("Adicionar", style: GoogleFonts.montserrat(color: Colors.white),),
       ),
       body: Container(
         padding: EdgeInsets.all(16),
@@ -37,54 +42,47 @@ class _AddPageState extends State<AddPage> {
               TextFormField(
                 controller: controller.wordPortuguese,
                 decoration: InputDecoration(
-                  labelText: "write your word in portuguese"
+                  labelText: "write your word in portuguese",
+                  labelStyle: GoogleFonts.montserrat(color: cfg.infoText),
+                  suffixIcon: Icon(Icons.translate, color: cfg.infoText,)
                 )
               ),
-              SizedBox(height: 15,),
-              TextFormField(
-                  controller: controller.wordEnglish,
-                  decoration: InputDecoration(
-                      labelText: "write your word in English"
-                  )
-              ),
-              SizedBox(height: 15,),
-              TextFormField(
-                  controller: controller.definition,
-                  decoration: InputDecoration(
-                      labelText: "write the definition"
-                  )
-              ),
-              SizedBox(height: 15,),
-              TextFormField(
-                  controller: controller.partOfSpeech,
-                  decoration: InputDecoration(
-                      labelText: "write the part of speech"
-                  )
-              ),
-              SizedBox(height: 15,),
-              TextFormField(
-                  controller: controller.jsonResponse,
-                  decoration: InputDecoration(
-                      labelText: "write the json"
-                  )
-              ),
-              SizedBox(height: 15,),
-              ElevatedButton(
-                  onPressed: () async {
-                    Words w = Words();
 
-                    w.wordPortuguese = controller.wordPortuguese.text;
-                    w.wordEnglish = controller.wordEnglish.text;
-                    w.definition = controller.definition.text;
-                    w.partOfSpeech = controller.partOfSpeech.text;
-                    w.jsonResponse = controller.jsonResponse.text;
-
-                    await controller.save(w).then((value) => Navigator.of(context).pop());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: cfg.title,
-                  ),
-                  child: Text("Save (salvar)")
+              SizedBox(height: 15,),
+              ValueListenableBuilder(
+                valueListenable: controller.loading,
+                builder: (_, __, ___) {
+                  return ElevatedButton(
+                      onPressed: () async {
+                        await controller.getTranslate(controller.wordPortuguese.text).then((value) => {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Palavra salva com sucesso!"), backgroundColor: Colors.green,
+                            duration: Duration(seconds: 1),))
+                        });
+                        Future.delayed(Duration(seconds: 1)).then((value) => {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomePage()))
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: cfg.title,
+                        elevation: 8,
+                        fixedSize: Size(size.width, 50),
+                        textStyle: GoogleFonts.montserrat(fontSize: 18)
+                      ),
+                      child: controller.loading.value == true ?
+                          CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),) :
+                          Text("Save (salvar)")
+                  );
+                }
+              ),
+              SizedBox(height: 30),
+              ValueListenableBuilder(
+                  valueListenable: controller.status,
+                  builder: (_, value, ___){
+                    return Center(
+                        child: Text("$value", style: GoogleFonts.montserrat(fontSize: 16),)
+                    );
+                  }
               )
             ],
           ),
