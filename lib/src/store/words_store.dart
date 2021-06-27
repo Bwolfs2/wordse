@@ -12,7 +12,6 @@ final String partOfSpeechColumn = "partOfSpeech";
 final dynamic jsonResponseColumn = "jsonResponse";
 
 class WordsStore {
-
   static final WordsStore _instance = WordsStore.internal();
   factory WordsStore() => _instance;
   WordsStore.internal();
@@ -20,7 +19,7 @@ class WordsStore {
   Database? _db;
 
   Future<dynamic> get db async {
-    if(_db != null){
+    if (_db != null) {
       return _db;
     } else {
       _db = await initDb();
@@ -33,17 +32,15 @@ class WordsStore {
     final path = join(databasesPath, "wordse.db");
     print(path);
     return await openDatabase(path, version: 1, onCreate: (Database db, int newerVersion) async {
-      await db.execute(
-        "CREATE TABLE $wordsTable("
-            "$idColumn INTEGER PRIMARY KEY, "
-            "$wordPortugueseColumn TEXT, "
-            "$wordEnglishColumn TEXT, "
-            "$favoriteColumn BOOLEAN, "
-            "$speakColumn TEXT,"
-            "$definitionColumn TEXT,"
-            "$partOfSpeechColumn TEXT,"
-            "$jsonResponseColumn TEXT)"
-      );
+      await db.execute("CREATE TABLE $wordsTable("
+          "$idColumn INTEGER PRIMARY KEY, "
+          "$wordPortugueseColumn TEXT, "
+          "$wordEnglishColumn TEXT, "
+          "$favoriteColumn BOOLEAN, "
+          "$speakColumn TEXT,"
+          "$definitionColumn TEXT,"
+          "$partOfSpeechColumn TEXT,"
+          "$jsonResponseColumn TEXT)");
     });
   }
 
@@ -63,10 +60,10 @@ class WordsStore {
 
     return query;
   }
-  
+
   Future<dynamic> getWord(int id) async {
     Database dbContext = await db;
-    
+
     List<Map> maps = await dbContext.query(wordsTable,
         columns: [
           idColumn,
@@ -77,9 +74,13 @@ class WordsStore {
           definitionColumn,
           partOfSpeechColumn,
           jsonResponseColumn
-        ], where: "$idColumn = ?", whereArgs: [id]);
+        ],
+        where: "$idColumn = ?",
+        whereArgs: [
+          id
+        ]);
 
-    if(maps.length > 0){
+    if (maps.length > 0) {
       return Words.fromMap(maps.first);
     } else {
       return null;
@@ -88,7 +89,9 @@ class WordsStore {
 
   Future<int> deleteWord(int id) async {
     Database dbContext = await db;
-    return await dbContext.delete(wordsTable, where: "$idColumn = ?", whereArgs: [id]);
+    return await dbContext.delete(wordsTable, where: "$idColumn = ?", whereArgs: [
+      id
+    ]);
   }
 
   Future<dynamic> updateFavorite(int id, int fav) async {
@@ -101,19 +104,19 @@ class WordsStore {
     List listMap = await dbContext.rawQuery("SELECT * FROM $wordsTable WHERE $favoriteColumn = 1");
     List<Words> wordsList = <Words>[];
 
-    for(Map m in listMap){
+    for (Map m in listMap) {
       wordsList.add(Words.fromMap(m));
     }
 
     return wordsList;
   }
 
-  Future<List> getAllWords() async {
+  Future<List<Words>> getAllWords() async {
     Database dbContext = await db;
     List listMap = await dbContext.rawQuery("SELECT * FROM $wordsTable");
     List<Words> wordsList = <Words>[];
 
-    for(Map m in listMap){
+    for (Map m in listMap) {
       wordsList.add(Words.fromMap(m));
     }
 
@@ -143,7 +146,7 @@ class Words {
 
   Words();
 
-  Words.fromMap(Map map){
+  Words.fromMap(Map map) {
     id = map[idColumn];
     wordPortuguese = map[wordPortugueseColumn];
     wordEnglish = map[wordEnglishColumn];
@@ -154,7 +157,7 @@ class Words {
     jsonResponse = map[jsonResponseColumn];
   }
 
-  Map toMap(){
+  Map toMap() {
     Map<String, dynamic> map = {
       wordPortugueseColumn: wordPortuguese,
       wordEnglishColumn: wordEnglish,
@@ -165,7 +168,7 @@ class Words {
       jsonResponseColumn: jsonResponse
     };
 
-    if(id != null){
+    if (id != null) {
       map[idColumn] = id;
     }
 

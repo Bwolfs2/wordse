@@ -18,11 +18,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   Config cfg = new Config();
   final controller = HomeController();
   final pageController = PageController(initialPage: 0);
-  final scrollViewController = ScrollController ();
+  final scrollViewController = ScrollController();
   WordsStore store = WordsStore();
 
   @override
@@ -35,64 +34,64 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      backgroundColor: cfg.background,
-      body: NestedScrollView(
-         controller: scrollViewController,
-        headerSliverBuilder: (_, __){
-           return <Widget>[
+        backgroundColor: cfg.background,
+        body: NestedScrollView(
+          controller: scrollViewController,
+          headerSliverBuilder: (_, __) {
+            return <Widget>[
               SliverAppBar(
                 automaticallyImplyLeading: false,
                 backgroundColor: cfg.background,
                 floating: true,
                 actions: [
-                  IconButton(onPressed: (){
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AddPage()));
-                  }, icon: Icon(Icons.add, color: cfg.title))
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AddPage()));
+                      },
+                      icon: Icon(Icons.add, color: cfg.title))
                 ],
-                title: Text("Let's practice!",
-                style: GoogleFonts.montserrat(
-                color: cfg.title,
-                fontWeight: FontWeight.w400,
-              ),),
-            )
-           ];
-        },
-        body: PageView(
-            onPageChanged: (i){
+                title: Text(
+                  "Let's practice!",
+                  style: GoogleFonts.montserrat(
+                    color: cfg.title,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              )
+            ];
+          },
+          body: PageView(
+            onPageChanged: (i) {
               controller.index = i;
             },
             controller: pageController,
             scrollDirection: Axis.horizontal,
             physics: NeverScrollableScrollPhysics(),
-            children: pages
+            children: pages,
+          ),
         ),
-      ),
-      bottomNavigationBar: ValueListenableBuilder(
-        valueListenable: controller.valueIndex,
-        builder: (_, __, ___){
-          return BottomNavigationBar(
-            backgroundColor: cfg.infoText,
-            currentIndex: controller.index,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white.withOpacity(.5),
-            type: BottomNavigationBarType.fixed,
-            onTap: (i){
-              controller.index = i;
-              pageController.animateToPage(
-                  controller.index,
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.decelerate);
-            },
-            items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Início"),
-              BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Dicas"),
-              BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favoritos"),
-              BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Configurações"),
-            ],
-          );
-        },
-      )
-    );
+        bottomNavigationBar: ValueListenableBuilder(
+          valueListenable: controller.valueIndex,
+          builder: (_, __, ___) {
+            return BottomNavigationBar(
+              backgroundColor: cfg.infoText,
+              currentIndex: controller.index,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white.withOpacity(.5),
+              type: BottomNavigationBarType.fixed,
+              onTap: (i) {
+                controller.index = i;
+                pageController.animateToPage(controller.index, duration: Duration(milliseconds: 500), curve: Curves.decelerate);
+              },
+              items: [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: "Início"),
+                BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Dicas"),
+                BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favoritos"),
+                BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Configurações"),
+              ],
+            );
+          },
+        ));
   }
 
   @override

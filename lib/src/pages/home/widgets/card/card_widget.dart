@@ -20,18 +20,24 @@ class CardWords extends StatefulWidget {
 }
 
 class _CardWordsState extends State<CardWords> {
+  var cfg = Config();
+  StoreController _storeController = StoreController();
+  late ValueNotifier<int> favoriteChange = ValueNotifier(widget.word!.favorite);
+  AudioPlayer audioPlayer = AudioPlayer();
+
+  playMusic() async {
+    await audioPlayer.play("${widget.word!.speak}", isLocal: false);
+  }
+
+  var listController = ListController();
+  var favoriteController = FavoritesController();
+  Future<void> updateList() async {
+    await listController.get();
+    await favoriteController.getFavorites();
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    var cfg = Config();
-    StoreController _storeController = StoreController();
-    ValueNotifier<int> favoriteChange = ValueNotifier(widget.word!.favorite);
-    AudioPlayer audioPlayer = AudioPlayer();
-
-    playMusic() async {
-      await audioPlayer.play("${widget.word!.speak}", isLocal: false);
-    }
-
     return Container(
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.only(bottom: 10),
@@ -60,21 +66,27 @@ class _CardWordsState extends State<CardWords> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text("${widget.word?.wordEnglish} ",
-                          style: GoogleFonts.montserrat(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text("${widget.word?.wordEnglish} ", style: GoogleFonts.montserrat(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
                       Text("(${widget.word?.wordPortuguese})", style: GoogleFonts.montserrat(color: Colors.black, fontWeight: FontWeight.normal)),
                       RotationTransition(
                         turns: AlwaysStoppedAnimation(170 / 179),
                         child: IconButton(
-                          icon: Icon(Icons.volume_up_rounded, color: Color(0xFF5390D9),),
-                          onPressed: (){
+                          icon: Icon(
+                            Icons.volume_up_rounded,
+                            color: Color(0xFF5390D9),
+                          ),
+                          onPressed: () {
                             playMusic();
-                          },),
+                          },
+                        ),
                       )
-                    ],),
+                    ],
+                  ),
                   Text("Example:", style: GoogleFonts.montserrat(color: cfg.subtitle, fontSize: 12, fontWeight: FontWeight.normal)),
                   SelectableText("${widget.word?.definition}", style: GoogleFonts.montserrat(color: cfg.subtitle, fontSize: 12, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
-                  SizedBox(height: 10,)
+                  SizedBox(
+                    height: 10,
+                  )
                 ],
               ),
             ),
@@ -87,50 +99,57 @@ class _CardWordsState extends State<CardWords> {
                       builder: (_, __, ___) {
                         return IconButton(
                           onPressed: () async {
-                            if(favoriteChange.value == 1) {
-                              await _storeController.update(widget.word?.id as int, 0).then((data) async {
-                                favoriteChange.value = 0;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("A palavra ${widget.word?.wordEnglish} "
-                                        "foi removida dos favoritos"), duration: Duration(seconds: 2),
-                                      backgroundColor: Colors.blue,));
-                              });
+                            if (favoriteChange.value == 1) {
+                              await _storeController.update(widget.word?.id as int, 0);
+                              favoriteChange.value = 0;
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("A palavra ${widget.word?.wordEnglish} "
+                                    "foi removida dos favoritos"),
+                                duration: Duration(seconds: 2),
+                                backgroundColor: Colors.blue,
+                              ));
                               widget.onTap(true);
+                              await updateList();
                             } else {
-                              if(widget.path == "fav") {
-                                await FavoritesController().update(widget.word?.id as int, 1).then((data) {
+                              if (widget.path == "fav") {
+                                await favoriteController.update(widget.word?.id as int, 1);
                                 favoriteChange.value = 1;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("A palavra ${widget.word?.wordEnglish} "
-                                "foi adicionada aos favoritos"), duration: Duration(seconds: 2),
-                                backgroundColor: Colors.green,));
-                                });
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text("A palavra ${widget.word?.wordEnglish} "
+                                      "foi adicionada aos favoritos"),
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.green,
+                                ));
                                 widget.onTap(true);
-                                ListController().list.value..addValue([]);
+                                updateList();
                               } else {
-                                await ListController().update(widget.word?.id as int, 1).then((data) {
-                                  favoriteChange.value = 1;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("A palavra ${widget.word?.wordEnglish} "
-                                          "foi adicionada aos favoritos"), duration: Duration(seconds: 2),
-                                        backgroundColor: Colors.green,));
-                                });
+                                await listController.update(widget.word?.id as int, 1);
+                                favoriteChange.value = 1;
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text("A palavra ${widget.word?.wordEnglish} "
+                                      "foi adicionada aos favoritos"),
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.green,
+                                ));
+
                                 widget.onTap(true);
+                                updateList();
                               }
                             }
                           },
-                          icon: Icon(
-                              favoriteChange.value == 1 ? Icons.favorite : Icons.favorite_border, color: Colors.red),);
-                      }
-                  ),
-                  IconButton(onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailsPage(words: widget.word)));
-                  }, icon: Icon(Icons.arrow_forward_sharp, color: cfg.infoText),)
+                          icon: Icon(favoriteChange.value == 1 ? Icons.favorite : Icons.favorite_border, color: Colors.red),
+                        );
+                      }),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailsPage(words: widget.word)));
+                    },
+                    icon: Icon(Icons.arrow_forward_sharp, color: cfg.infoText),
+                  )
                 ],
               ),
             )
           ],
-        )
-    );
+        ));
   }
 }

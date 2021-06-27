@@ -3,7 +3,7 @@ import 'package:wordse_app/src/store/words_store.dart';
 class StoreController {
   WordsStore store = WordsStore();
 
-  Future get() async {
+  Future<List<Words>> get() async {
     var x = await store.getAllWords();
     print("print do get store controller $x");
     return x;

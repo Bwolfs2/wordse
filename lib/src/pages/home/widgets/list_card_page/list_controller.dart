@@ -1,28 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:wordse_app/src/store/store_controller.dart';
+import 'package:wordse_app/src/store/words_store.dart';
 
 class ListController {
-
-  ValueNotifier list = ValueNotifier([]);
+  ValueNotifier<List<Words>> list = ValueNotifier([]);
   ValueNotifier loading = ValueNotifier(true);
   final storeController = StoreController();
 
-  ListController(){
+//singleton
+  static ListController? _instance;
+  static ListController get getInstance => _instance ??= ListController._();
+  ListController._() {
     get();
   }
+  factory ListController() => getInstance;
+//singleton
 
   Future get() async {
     list.value = [];
-    storeController.get().then((value) {
-      list.value = value;
-      loading.value = false;
-    });
+    var value = await storeController.get();
+    list.value = value;
+    loading.value = false;
   }
 
   Future update(int id, int fav) async {
     int x = await storeController.update(id, fav);
 
-    if(x == 1){
+    if (x == 1) {
       await get();
     }
   }
