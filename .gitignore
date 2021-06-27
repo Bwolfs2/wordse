@@ -45,4 +45,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-src/wordse_app/lib/src/pages/add_page/translation.dart
+./lib/src/pages/add_page/translation.dart

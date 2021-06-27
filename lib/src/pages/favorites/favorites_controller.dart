@@ -7,7 +7,9 @@ class FavoritesController {
 
   StoreController _storeController = StoreController();
 
-  FavoritesController(){getFavorites();}
+  FavoritesController(){
+    getFavorites();
+  }
 
   Future getFavorites() async {
     list.value = [];

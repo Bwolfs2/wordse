@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wordse_app/src/pages/home/widgets/card/card_widget.dart';
 import 'package:wordse_app/src/pages/home/widgets/list_card_page/list_controller.dart';
-
-import '../card_widget.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({Key? key}) : super(key: key);
@@ -14,25 +12,19 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
 
-  late ListController controller;
+  late ListController controller = ListController();
 
   @override
   void initState() {
     super.initState();
-    controller = ListController();
-
-    controller.loading.addListener(() {
-      print(controller.loading.value);
-    });
-
     controller.list.addListener(() {
-      setState(() {
 
-      });
-      if(controller.list.value != null || controller.list.value.length > 0){
-        controller.loading.value = false;
-      }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -40,7 +32,7 @@ class _ListPageState extends State<ListPage> {
 
     return ValueListenableBuilder(
       valueListenable: controller.list,
-      builder: (_, __, ___){
+      builder: (_, value, ___){
         if(controller.loading.value == true){
           return Center(
             child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black),),
@@ -48,7 +40,7 @@ class _ListPageState extends State<ListPage> {
         }
         if(controller.list.value.length == 0){
           return Center(
-            child: Text("Nenhuma palavra encontra, \nadicione pelo ícone de +",
+            child: Text("Nenhuma palavra encontrada, \nadicione pelo ícone de +",
               textAlign: TextAlign.center, style: GoogleFonts.montserrat(fontSize: 16),),
           );
         }

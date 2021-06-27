@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   Config cfg = new Config();
   final controller = HomeController();
   final pageController = PageController(initialPage: 0);
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             },
             controller: pageController,
             scrollDirection: Axis.horizontal,
-            physics:new NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             children: pages
         ),
       ),

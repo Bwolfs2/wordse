@@ -7,25 +7,29 @@ import 'package:wordse_app/src/pages/favorites/favorites_controller.dart';
 import 'package:wordse_app/src/store/store_controller.dart';
 import 'package:wordse_app/src/store/words_store.dart';
 
-import 'list_card_page/list_controller.dart';
+import '../list_card_page/list_controller.dart';
 
-class CardWords extends StatelessWidget {
+class CardWords extends StatefulWidget {
   final Words? word;
   final String path;
   final Function(bool) onTap;
   const CardWords({Key? key, required this.word, required this.onTap, required this.path}) : super(key: key);
 
+  @override
+  _CardWordsState createState() => _CardWordsState();
+}
 
+class _CardWordsState extends State<CardWords> {
   @override
   Widget build(BuildContext context) {
 
     var cfg = Config();
     StoreController _storeController = StoreController();
-    ValueNotifier<int> favoriteChange = ValueNotifier(word!.favorite);
+    ValueNotifier<int> favoriteChange = ValueNotifier(widget.word!.favorite);
     AudioPlayer audioPlayer = AudioPlayer();
 
     playMusic() async {
-      await audioPlayer.play("${word!.speak}", isLocal: false);
+      await audioPlayer.play("${widget.word!.speak}", isLocal: false);
     }
 
     return Container(
@@ -56,9 +60,9 @@ class CardWords extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text("${word?.wordEnglish} ",
+                      Text("${widget.word?.wordEnglish} ",
                           style: GoogleFonts.montserrat(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text("(${word?.wordPortuguese})", style: GoogleFonts.montserrat(color: Colors.black, fontWeight: FontWeight.normal)),
+                      Text("(${widget.word?.wordPortuguese})", style: GoogleFonts.montserrat(color: Colors.black, fontWeight: FontWeight.normal)),
                       RotationTransition(
                         turns: AlwaysStoppedAnimation(170 / 179),
                         child: IconButton(
@@ -69,7 +73,7 @@ class CardWords extends StatelessWidget {
                       )
                     ],),
                   Text("Example:", style: GoogleFonts.montserrat(color: cfg.subtitle, fontSize: 12, fontWeight: FontWeight.normal)),
-                  SelectableText("${word?.definition}", style: GoogleFonts.montserrat(color: cfg.subtitle, fontSize: 12, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
+                  SelectableText("${widget.word?.definition}", style: GoogleFonts.montserrat(color: cfg.subtitle, fontSize: 12, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
                   SizedBox(height: 10,)
                 ],
               ),
@@ -84,33 +88,34 @@ class CardWords extends StatelessWidget {
                         return IconButton(
                           onPressed: () async {
                             if(favoriteChange.value == 1) {
-                              await _storeController.update(word?.id as int, 0).then((data) async {
+                              await _storeController.update(widget.word?.id as int, 0).then((data) async {
                                 favoriteChange.value = 0;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("A palavra ${word?.wordEnglish} "
+                                    SnackBar(content: Text("A palavra ${widget.word?.wordEnglish} "
                                         "foi removida dos favoritos"), duration: Duration(seconds: 2),
                                       backgroundColor: Colors.blue,));
                               });
-                              onTap(true);
+                              widget.onTap(true);
                             } else {
-                              if(path == "fav") {
-                                await FavoritesController().update(word?.id as int, 1).then((data) {
+                              if(widget.path == "fav") {
+                                await FavoritesController().update(widget.word?.id as int, 1).then((data) {
                                 favoriteChange.value = 1;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("A palavra ${word?.wordEnglish} "
+                                SnackBar(content: Text("A palavra ${widget.word?.wordEnglish} "
                                 "foi adicionada aos favoritos"), duration: Duration(seconds: 2),
                                 backgroundColor: Colors.green,));
                                 });
-                                onTap(true);
+                                widget.onTap(true);
+                                ListController().list.value..addValue([]);
                               } else {
-                                await ListController().update(word?.id as int, 1).then((data) {
+                                await ListController().update(widget.word?.id as int, 1).then((data) {
                                   favoriteChange.value = 1;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("A palavra ${word?.wordEnglish} "
+                                      SnackBar(content: Text("A palavra ${widget.word?.wordEnglish} "
                                           "foi adicionada aos favoritos"), duration: Duration(seconds: 2),
                                         backgroundColor: Colors.green,));
                                 });
-                                onTap(true);
+                                widget.onTap(true);
                               }
                             }
                           },
@@ -119,7 +124,7 @@ class CardWords extends StatelessWidget {
                       }
                   ),
                   IconButton(onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailsPage(words: word)));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailsPage(words: widget.word)));
                   }, icon: Icon(Icons.arrow_forward_sharp, color: cfg.infoText),)
                 ],
               ),

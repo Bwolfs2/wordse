@@ -8,15 +8,14 @@ class ListController {
   final storeController = StoreController();
 
   ListController(){
-    get().then((value) => loading.value = false);
+    get();
   }
 
   Future get() async {
     list.value = [];
-    loading.value = true;
     storeController.get().then((value) {
-      loading.value = false;
       list.value = value;
+      loading.value = false;
     });
   }
 
@@ -27,5 +26,4 @@ class ListController {
       await get();
     }
   }
-
 }

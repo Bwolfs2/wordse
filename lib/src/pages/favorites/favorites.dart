@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wordse_app/src/pages/favorites/favorites_controller.dart';
-import 'package:wordse_app/src/pages/home/widgets/card_widget.dart';
+import 'package:wordse_app/src/pages/home/widgets/card/card_widget.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({Key? key}) : super(key: key);
